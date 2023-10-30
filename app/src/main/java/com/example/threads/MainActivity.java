@@ -37,7 +37,26 @@ public class MainActivity extends AppCompatActivity {
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                txt.setText(getDataFromUrl("https://api.myip.com/"));
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        // Tasques en background (xarxa)
+                        String url = getDataFromUrl("https://api.myip.com");
+
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                // Tasques a la interfície gràfica (GUI)
+                                txt.setText(url);
+
+                            }
+                        });
+                    }
+                });
             }
         });
 /*
