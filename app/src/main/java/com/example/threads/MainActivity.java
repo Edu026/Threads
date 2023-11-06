@@ -2,11 +2,15 @@ package com.example.threads;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -31,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
         TextView txt = findViewById(R.id.ip);
         final Button b1 = findViewById(R.id.button);
-
-
+        ImageView imageView = findViewById(R.id.imageView1);
+        String urldisplay = "https://randomfox.ca/images/122.jpg";
 
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,45 +45,30 @@ public class MainActivity extends AppCompatActivity {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-
                         // Tasques en background (xarxa)
                         String url = getDataFromUrl("https://api.myip.com");
-
                         Handler handler = new Handler(Looper.getMainLooper());
+                        String urldisplay = "https://randomfox.ca/images/122.jpg";
+                        InputStream in = null;
+                        try {
+                            in = new java.net.URL(urldisplay).openStream();
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage());
+                            e.printStackTrace();
+                        }
+                        final Bitmap bitmap = BitmapFactory.decodeStream(in);
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-
                                 // Tasques a la interfície gràfica (GUI)
                                 txt.setText(url);
-
+                                imageView.setImageBitmap(bitmap);
                             }
                         });
                     }
                 });
             }
         });
-/*
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-                // Tasques en background (xarxa)
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        // Tasques a la interfície gràfica (GUI)
-
-                    }
-                });
-            }
-        });
-        */
-
     }
     String error = ""; // string field
     private String getDataFromUrl(String demoIdUrl) {
